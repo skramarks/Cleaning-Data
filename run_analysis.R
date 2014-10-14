@@ -19,8 +19,14 @@ activity.hdr <- read.table("smartphone/activity_labels.txt")
 test <-read.table("smartphone/test/X_test.txt")
 names(test) <- hdrs
 
+test$subject <-  list(read.table("smartphone/test/subject_test.txt"))
+names(test$subject) <- "subject"
+
 activity.test <- read.table("smartphone/test/Y_test.txt")
 test$activity <- sapply(activity.test, map_activity)
+names(test$activity) <- "activity"
+
+
 
 
 
@@ -33,13 +39,20 @@ test$activity <- sapply(activity.test, map_activity)
 train <-read.table("smartphone/train/X_train.txt")
 names(train) <- hdrs
 
+train$subject <- list(read.table("smartphone/train/subject_train.txt"))
+names(train$subject) <- "subject"
+
+
 activity.train <- read.table("smartphone/train/Y_train.txt")
 train$activity <- sapply(activity.train, map_activity)
+names(train$activity) <- "activity"
+
+
 
 # merge the data sets and save them.
 dataset <- rbind(test, train)
 
-
+datatable <- data.table(dataset)
 
 
 
