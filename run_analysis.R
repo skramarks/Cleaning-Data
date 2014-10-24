@@ -10,7 +10,7 @@ map_activity <- function(activity_num) {
 }
 
 # grab the column headers for features
-features <- read.table("smartphone/features.txt")
+features <- read.csv("smartphone/features.tidy.txt", header=FALSE)
 
 # grab the column header for the activities
 hdrs <- as.character(features[,2])
@@ -26,15 +26,15 @@ names(test) <- hdrs
 
 # read the test subject data and insert the headers
 subject <-  read.table("smartphone/test/subject_test.txt")
-test$subject <- factor(subject[,1])
-names(test$subject) <- "subject"
+test$Subject <- factor(subject[,1])
+names(test$Subject) <- "Subject"
 
 # read in the activity information to for the test dataset.
 # convert it to a readabile format and merge it into the test
 # dataset.  Also insert column header.
 activity.test <- read.table("smartphone/test/Y_test.txt")
-test$activity <- sapply(activity.test, map_activity, simplify = "vector")
-names(test$activity) <- "activity"
+test$Activity <- sapply(activity.test, map_activity, simplify = "vector")?sub
+names(test$Activity) <- "Activity"
 
 
 #
@@ -47,15 +47,15 @@ names(train) <- hdrs
 
 # read the training subject data and insert the headers
 subject <- read.table("smartphone/train/subject_train.txt")
-train$subject <- factor(subject[,1])
-names(train$subject) <- "subject"
+train$Subject <- factor(subject[,1])
+names(train$Subject) <- "Subject"
 
 # read in the activity information to for the test dataset.
 # convert it to a readabile format and merge it into the test
 # dataset.  Also insert column header.
 activity.train <- read.table("smartphone/train/Y_train.txt")
-train$activity <- sapply(activity.train, map_activity, simplify = "vector")
-names(train$activity) <- "activity"
+train$Activity <- sapply(activity.train, map_activity, simplify = "vector")
+names(train$Activity) <- "Activity"
 
 
 #
@@ -64,17 +64,16 @@ dataset <- rbind(test, train)
 
 #
 # extract only the the subject, activity, and colmns that have std() or mean() in the names.
-subset <-dataset[, grep("std\\(\\)|mean\\(\\)|activity|subject", names(dataset))]
-subset$activity <- factor(subset$activity)
+subset <-dataset[, grep("Std|Mean|Activity|Subject", names(dataset))]
+subset$Activity <- factor(subset$Activity)
 
 #
 # 
-melted <- melt(subset, id.vars=c("activity", "subject"))
-dcast(melted, activity ~ variable, fun=mean)
-dcast(melted, subject ~ variable, fun=mean)
+#melted <- melt(subset, id.vars=c("activity", "subject"))
+#dcast(melted, activity ~ variable, fun=mean)
+#dcast(melted, subject ~ variable, fun=mean)
 
-# save the results
-write.csv(melted, "melted.csv")
+
 
 
 #
@@ -82,11 +81,12 @@ write.csv(melted, "melted.csv")
 
 tbl_subset <- subset %>%
     tbl_df() %>%
-    group_by(subject, activity) %>%
+    group_by(Subject, Activity) %>%
     summarise_each(funs(mean)) %>%
-    arrange(subject, activity)
+    arrange(Subject, Activity)
 
-
+# save the results
+write.table(tbl_subset, "tbl_subset.csv", row.name=FALSE, )
 
 
 # R is mungning the colum names.  Grab the munged names.
