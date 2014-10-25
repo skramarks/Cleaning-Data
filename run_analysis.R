@@ -82,7 +82,7 @@ tidy.mean.subset <- tidy.subset %>%
     arrange(Subject, Activity) 
 
 # save the results
-write.table(tidy.mean.subset, "tidy.mean.subset.csv", row.name=FALSE, )
+write.table(tidy.mean.subset, "tidy.mean.subset.txt", row.name=FALSE, )
 
 
 
