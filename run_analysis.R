@@ -10,26 +10,26 @@ map_activity <- function(activity_num) {
 }
 
 # grab the column headers for features
-features <- read.table("smartphone/features.txt", header=FALSE)
+features <- read.table("features.txt", header=FALSE)
 
 # grab the column header for the activities
 hdrs <- as.character(features[,2])
-activity.hdr <- read.table("smartphone/activity_labels.txt")
+activity.hdr <- read.table("activity_labels.txt")
 
 #
 # For the test data
 #
 
 # read the test data & insert headers
-test <-read.table("smartphone/test/X_test.txt")
+test <-read.table("test/X_test.txt")
 names(test) <- hdrs
 
 # read the test subject data and insert the headers
-subject <-  read.table("smartphone/test/subject_test.txt")
+subject <-  read.table("test/subject_test.txt")
 test$Subject <- subject[,1]
 names(test$Subject) <- "Subject"
 
-activity.test <- read.table("smartphone/test/Y_test.txt")
+activity.test <- read.table("test/Y_test.txt")
 test$Activity <- sapply(activity.test, map_activity, simplify = "vector")
 names(test$Activity) <- "Activity"
 
@@ -39,18 +39,18 @@ names(test$Activity) <- "Activity"
 #
 
 # read the training data & insert headers
-train <-read.table("smartphone/train/X_train.txt")
+train <-read.table("train/X_train.txt")
 names(train) <- hdrs
 
 # read the training subject data and insert the headers
-subject <- read.table("smartphone/train/subject_train.txt")
+subject <- read.table("train/subject_train.txt")
 train$Subject <- subject[,1]
 names(train$Subject) <- "Subject"
 
 # read in the activity information to for the test dataset.
 # convert it to a readabile format and merge it into the test
 # dataset.  Also insert column header.
-activity.train <- read.table("smartphone/train/Y_train.txt")
+activity.train <- read.table("train/Y_train.txt")
 train$Activity <- sapply(activity.train, map_activity, simplify = "vector")
 names(train$Activity) <- "Activity"
 
