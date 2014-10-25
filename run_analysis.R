@@ -67,7 +67,7 @@ subset$Activity <- factor(subset$Activity)
 tidy.subset <- subset %>%
     tbl_df() %>%
     arrange(Subject, Activity) %>%
-    gather(Attribute, Value, -Subject, -Activity)
+    gather(Feature, Value, -Subject, -Activity)
 
 
 #
@@ -77,9 +77,10 @@ tidy.subset <- subset %>%
 
 tidy.mean.subset <- tidy.subset %>%
     tbl_df() %>%
-    group_by(Subject, Activity, Attribute) %>%
-    summarise_each(funs(mean)) %>%
+    group_by(Subject, Activity, Feature) %>%
+    summarise(Mean = mean(Value)) %>%
     arrange(Subject, Activity) 
+
 
 # save the results
 write.table(tidy.mean.subset, "tidy.mean.subset.txt", row.name=FALSE, )
