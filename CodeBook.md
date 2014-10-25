@@ -17,7 +17,7 @@ Variable:           Activity
     
 Variable:           Feature
 
-    Description:    The the feature for with the mean is being calculated.  There are several hundred
+    Description:    The the feature for which the mean is being calculated.  There are several hundred
                     features in the dataset.  Refer to smartphone/features_info.txt for details
     Units:          This is a text lable.
     
