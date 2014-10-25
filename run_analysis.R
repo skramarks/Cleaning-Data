@@ -1,6 +1,6 @@
 library(data.table)
 library(dplyr)
-library(reshape2)
+library(tidyr)
 
 #
 # map_activity - converts the activity_num to a human readible format
@@ -10,7 +10,7 @@ map_activity <- function(activity_num) {
 }
 
 # grab the column headers for features
-features <- read.csv("smartphone/features.tidy.txt", header=FALSE)
+features <- read.csv("features.tidy.txt", header=FALSE)
 
 # grab the column header for the activities
 hdrs <- as.character(features[,2])
@@ -26,14 +26,11 @@ names(test) <- hdrs
 
 # read the test subject data and insert the headers
 subject <-  read.table("smartphone/test/subject_test.txt")
-test$Subject <- factor(subject[,1])
+test$Subject <- subject[,1]
 names(test$Subject) <- "Subject"
 
-# read in the activity information to for the test dataset.
-# convert it to a readabile format and merge it into the test
-# dataset.  Also insert column header.
 activity.test <- read.table("smartphone/test/Y_test.txt")
-test$Activity <- sapply(activity.test, map_activity, simplify = "vector")?sub
+test$Activity <- sapply(activity.test, map_activity, simplify = "vector")
 names(test$Activity) <- "Activity"
 
 
@@ -47,7 +44,7 @@ names(train) <- hdrs
 
 # read the training subject data and insert the headers
 subject <- read.table("smartphone/train/subject_train.txt")
-train$Subject <- factor(subject[,1])
+train$Subject <- subject[,1]
 names(train$Subject) <- "Subject"
 
 # read in the activity information to for the test dataset.
@@ -65,32 +62,24 @@ dataset <- rbind(test, train)
 #
 # extract only the the subject, activity, and colmns that have std() or mean() in the names.
 subset <-dataset[, grep("Std|Mean|Activity|Subject", names(dataset))]
-subset$Activity <- factor(subset$Activity)
-
-#
-# 
-#melted <- melt(subset, id.vars=c("activity", "subject"))
-#dcast(melted, activity ~ variable, fun=mean)
-#dcast(melted, subject ~ variable, fun=mean)
-
-
+subset$Activity <- factor(subset$Activity) 
 
 
 #
-# try it using dplyr
+# Group the data by Subject and Activty and generate means for all of the
+# variable in each group.
+#
 
-tbl_subset <- subset %>%
+tidy_subset <- subset %>%
     tbl_df() %>%
     group_by(Subject, Activity) %>%
     summarise_each(funs(mean)) %>%
-    arrange(Subject, Activity)
+    arrange(Subject, Activity) %>%
+    gather(Attribute, MeanValue, -Subject, -Activity)
+    
+    
+#    unite(Subject.and.Activty, Subject, Activity)
 
 # save the results
-write.table(tbl_subset, "tbl_subset.csv", row.name=FALSE, )
-
-
-# R is mungning the colum names.  Grab the munged names.
-#hdrs <-names(test)
-
-
+write.table(tidy_subset, "tidy_subset.csv", row.name=FALSE, )
 
