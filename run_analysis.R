@@ -10,7 +10,7 @@ map_activity <- function(activity_num) {
 }
 
 # grab the column headers for features
-features <- read.csv("features.tidy.txt", header=FALSE)
+features <- read.table("smartphone/features.txt", header=FALSE)
 
 # grab the column header for the activities
 hdrs <- as.character(features[,2])
@@ -61,8 +61,13 @@ dataset <- rbind(test, train)
 
 #
 # extract only the the subject, activity, and colmns that have std() or mean() in the names.
-subset <-dataset[, grep("Std|Mean|Activity|Subject", names(dataset))]
+subset <-dataset[, grep("Std|Mean|Activity|Subject", names(dataset), ignore.case=TRUE)]
 subset$Activity <- factor(subset$Activity) 
+
+tidy.subset <- subset %>%
+    tbl_df() %>%
+    arrange(Subject, Activity) %>%
+    gather(Attribute, Value, -Subject, -Activity)
 
 
 #
@@ -70,16 +75,14 @@ subset$Activity <- factor(subset$Activity)
 # variable in each group.
 #
 
-tidy_subset <- subset %>%
+tidy.mean.subset <- tidy.subset %>%
     tbl_df() %>%
-    group_by(Subject, Activity) %>%
+    group_by(Subject, Activity, Attribute) %>%
     summarise_each(funs(mean)) %>%
-    arrange(Subject, Activity) %>%
-    gather(Attribute, MeanValue, -Subject, -Activity)
-    
-    
-#    unite(Subject.and.Activty, Subject, Activity)
+    arrange(Subject, Activity) 
 
 # save the results
-write.table(tidy_subset, "tidy_subset.csv", row.name=FALSE, )
+write.table(tidy.mean.subset, "tidy.mean.subset.csv", row.name=FALSE, )
+
+
 
